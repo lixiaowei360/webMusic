@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.webMusic.common.dao.UserRelationshipMapper" >
+  <resultMap id="BaseResultMap" type="com.webMusic.common.model.UserRelationship" >
+    <id column="relationship_id" property="relationshipId" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="target_user_id" property="targetUserId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="UserRelationUser" type="com.webMusic.common.model.UserRelationship" extends="BaseResultMap">
+  	<association property="user" resultMap="com.webMusic.common.dao.UUserMapper.BaseResultMap" />
+   </resultMap>
+  
+  
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    ur.relationship_id, ur.type, ur.target_user_id, ur.user_id
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.webMusic.common.model.UserRelationshipExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from user_relationship ur
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from user_relationship ur
+    where relationship_id = #{relationshipId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from user_relationship
+    where relationship_id = #{relationshipId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.webMusic.common.model.UserRelationshipExample" >
+    delete from user_relationship
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.webMusic.common.model.UserRelationship" >
+    insert into user_relationship (relationship_id, type, target_user_id, 
+      user_id)
+    values (#{relationshipId,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{targetUserId,jdbcType=VARCHAR}, 
+      #{userId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.webMusic.common.model.UserRelationship" >
+    insert into user_relationship
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="relationshipId != null" >
+        relationship_id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="targetUserId != null" >
+        target_user_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="relationshipId != null" >
+        #{relationshipId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="targetUserId != null" >
+        #{targetUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.webMusic.common.model.UserRelationshipExample" resultType="java.lang.Integer" >
+    select count(*) from user_relationship
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update user_relationship
+    <set >
+      <if test="record.relationshipId != null" >
+        relationship_id = #{record.relationshipId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+      <if test="record.targetUserId != null" >
+        target_user_id = #{record.targetUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update user_relationship
+    set relationship_id = #{record.relationshipId,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=INTEGER},
+      target_user_id = #{record.targetUserId,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.webMusic.common.model.UserRelationship" >
+    update user_relationship
+    <set >
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="targetUserId != null" >
+        target_user_id = #{targetUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where relationship_id = #{relationshipId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.webMusic.common.model.UserRelationship" >
+    update user_relationship
+    set type = #{type,jdbcType=INTEGER},
+      target_user_id = #{targetUserId,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=VARCHAR}
+    where relationship_id = #{relationshipId,jdbcType=VARCHAR}
+  </update>
+  
+  
+  
+  <sql id="limit_sql">
+  	   <if test="page_sql != null and page_sql != ''">
+      	${page_sql}
+      </if>
+  </sql>
+  
+  <sql id="where_all">
+  	<where>
+  		<trim suffixOverrides="and|or">
+		  	  <if test="type != null" >
+		  	  	type = #{type} and
+		      </if>
+		      <if test="userId != null and userId !='' " >
+		  	  	user_id = #{userId} and
+		      </if>
+	    </trim>
+    </where>
+  </sql>
+  <select id="findAll" resultMap="UserRelationUser" >
+  	 select 
+    <include refid="Base_Column_List" />,
+    <include refid="com.webMusic.common.dao.UUserMapper.Base_Column_List" />
+    from user_relationship ur
+    left join u_user uu on uu.id = ur.target_user_id
+    <include refid="where_all"/>
+    <include refid="limit_sql" />
+  </select>
+  <select id="findCount" resultMap="BaseResultMap" >
+ 	 select count(*) from  user_relationship
+  	<include refid="where_all" />
+  </select>
+
+  <select id="findUserRealtionCount" resultType="java.lang.Integer" >
+    select count(*) from  user_relationship
+    <include refid="where_all" />
+  </select>
+
+</mapper>

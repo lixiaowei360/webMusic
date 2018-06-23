@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.webMusic.common.dao.CommentsMapper" >
+  <resultMap id="BaseResultMap" type="com.webMusic.common.model.Comments" >
+    <result column="comments_id" property="commentsId" jdbcType="VARCHAR" />
+    <result column="from_uid" property="fromUid" jdbcType="VARCHAR" />
+    <result column="to_uid" property="toUid" jdbcType="VARCHAR" />
+    <result column="topic_id" property="topicId" jdbcType="VARCHAR" />
+    <result column="topic_type" property="topicType" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="fantastic_num" property="fantasticNum" jdbcType="INTEGER" />
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+    <result column="is_public" property="isPublic" jdbcType="BIT" />
+  </resultMap>
+  <resultMap type="com.webMusic.common.model.Comments" id="UserAndCommentsResultMap" extends="com.webMusic.common.dao.UUserMapper.BaseResultMapTwo">
+  	<result column="comments_id" property="commentsId" jdbcType="VARCHAR" />
+    <result column="from_uid" property="fromUid" jdbcType="VARCHAR" />
+    <result column="to_uid" property="toUid" jdbcType="VARCHAR" />
+    <result column="topic_id" property="topicId" jdbcType="VARCHAR" />
+    <result column="topic_type" property="topicType" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="fantastic_num" property="fantasticNum" jdbcType="INTEGER" />
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+    <result column="is_public" property="isPublic" jdbcType="BIT" />
+    <result column="count" property="replyNo" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="UserAndCommentsResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />,
+   <include refid="com.webMusic.common.dao.UUserMapper.Base_Column_List_Two" />,
+    (select COUNT(*) from comments where topic_id = cs.comments_id and is_public = true) as count
+    from comments cs 
+    LEFT join u_user uu on uu.id = cs.from_uid
+    LEFT join u_user uuTwo on uuTwo.id = cs.to_uid
+    where comments_id = #{commentsId,jdbcType=VARCHAR}
+  </select>
+  
+  
+  <sql id="Base_Column_List" >
+    cs.comments_id, cs.from_uid, cs.to_uid, cs.topic_id, cs.topic_type, cs.create_time, cs.fantastic_num,cs.content,
+    cs.is_public
+  </sql>
+  <select id="selectByExample" resultMap="UserAndCommentsResultMap" parameterType="com.webMusic.common.model.CommentsExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+   <include refid="Base_Column_List" />,
+   <include refid="com.webMusic.common.dao.UUserMapper.Base_Column_List_Two" />,
+    (select COUNT(*) from comments where topic_id = cs.comments_id and is_public = true) as count
+    from comments cs
+   LEFT join u_user uu on uu.id = cs.from_uid
+   LEFT join u_user uuTwo on uuTwo.id = cs.to_uid
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.webMusic.common.model.CommentsExample" >
+    delete from comments
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.webMusic.common.model.Comments" >
+    insert into comments (comments_id, from_uid, to_uid, 
+      topic_id, topic_type, create_time,
+      fantastic_num,content,is_public)
+    values (#{commentsId,jdbcType=VARCHAR}, #{fromUid,jdbcType=VARCHAR}, #{toUid,jdbcType=VARCHAR}, 
+      #{topicId,jdbcType=VARCHAR}, #{topicType,jdbcType=VARCHAR}, #{createTime},
+      #{fantasticNum,jdbcType=INTEGER},#{content,jdbcType=LONGVARCHAR},#{isPublic,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.webMusic.common.model.Comments" >
+    insert into comments
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="commentsId != null" >
+        comments_id,
+      </if>
+      <if test="fromUid != null" >
+        from_uid,
+      </if>
+      <if test="toUid != null" >
+        to_uid,
+      </if>
+      <if test="topicId != null" >
+        topic_id,
+      </if>
+      <if test="topicType != null" >
+        topic_type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="fantasticNum != null" >
+        fantastic_num,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="isPublic != null" >
+        is_public,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="commentsId != null" >
+        #{commentsId,jdbcType=VARCHAR},
+      </if>
+      <if test="fromUid != null" >
+        #{fromUid,jdbcType=VARCHAR},
+      </if>
+      <if test="toUid != null" >
+        #{toUid,jdbcType=VARCHAR},
+      </if>
+      <if test="topicId != null" >
+        #{topicId,jdbcType=VARCHAR},
+      </if>
+      <if test="topicType != null" >
+        #{topicType,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime},
+      </if>
+      <if test="fantasticNum != null" >
+        #{fantasticNum,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="isPublic != null" >
+        #{isPublic,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.webMusic.common.model.CommentsExample" resultType="java.lang.Integer" >
+    select count(*) from comments
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update comments
+    <set >
+      <if test="record.commentsId != null" >
+        comments_id = #{record.commentsId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fromUid != null" >
+        from_uid = #{record.fromUid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.toUid != null" >
+        to_uid = #{record.toUid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.topicId != null" >
+        topic_id = #{record.topicId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.topicType != null" >
+        topic_type = #{record.topicType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime},
+      </if>
+      <if test="record.fantasticNum != null" >
+        fantastic_num = #{record.fantasticNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.content != null" >
+        content = #{record.content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.isPublic != null" >
+        is_public = #{record.isPublic,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update comments
+    set comments_id = #{record.commentsId,jdbcType=VARCHAR},
+      from_uid = #{record.fromUid,jdbcType=VARCHAR},
+      to_uid = #{record.toUid,jdbcType=VARCHAR},
+      topic_id = #{record.topicId,jdbcType=VARCHAR},
+      topic_type = #{record.topicType,jdbcType=VARCHAR},
+      create_time = #{record.createTime},
+      fantastic_num = #{record.fantasticNum,jdbcType=INTEGER},
+      content = #{record.content,jdbcType=LONGVARCHAR},
+      is_public = #{record.isPublic,jdbcType=BIT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  
+  
+  <select id="findAll" resultMap="UserAndCommentsResultMap">
+   select 
+   <include refid="Base_Column_List" />,
+   <include refid="com.webMusic.common.dao.UUserMapper.Base_Column_List_Two" />,
+    (select COUNT(*) from comments where topic_id = cs.comments_id and is_public = true) as count
+   from comments cs
+   LEFT join u_user uu on uu.id = cs.from_uid
+   LEFT join u_user uuTwo on uuTwo.id = cs.to_uid
+   <include refid="where_all" />
+    order by cs.create_time desc
+   <include refid="limit_sql" />
+ </select>
+  
+  
+  
+  <select id="findCount" resultMap="BaseResultMap">
+	 select count(comments_id) from  comments
+ 	<include refid="where_all" />
+ </select>
+  
+ <sql id="where_all">
+  <where>
+      <trim suffixOverrides="and|or">
+	  	<if test="topicId != null and topicId != ''">
+	  		LOWER(topic_id)  =  #{topicId,jdbcType=VARCHAR} and 
+	  	</if>
+	  	<if test="topicType != null and topicType != ''">
+	  		LOWER(topic_type) = #{topicType,jdbcType=VARCHAR} and 
+	  	</if>
+	  	<if test="topicType == null or topicType ==  ''">
+	  		(topic_type = '1' or topic_type = '2')and 
+	  	</if>
+	  	<if test="content != null and content != ''">
+	  		LOWER(content) like CONCAT("%",#{content,jdbcType=VARCHAR},"%") and
+	  	</if>
+        <if test="isPublic != null">
+          LOWER(is_public) = #{isPublic,jdbcType=VARCHAR} and
+        </if>
+	  </trim>
+  </where>
+</sql>
+ <sql id="limit_sql">
+ 	   <if test="page_sql != null and page_sql != ''">
+     	${page_sql}
+     </if>
+ </sql>
+</mapper>

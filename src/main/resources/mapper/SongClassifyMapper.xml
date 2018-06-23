@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webMusic.common.dao.SongClassifyMapper">
+  <resultMap id="BaseResultMap" type="com.webMusic.common.model.SongClassify" >
+    <id column="song_classify_id" property="songClassifyId" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="VARCHAR" />
+    <result column="song_classify_name" property="songClassifyName" jdbcType="VARCHAR" />
+    <result column="classify_sort" property="classifySort" jdbcType="VARCHAR" />
+    <result column="classify_home" property="classifyHome" jdbcType="VARCHAR" />
+    <result column="is_parent" property="isParent" jdbcType="BIT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    sc.song_classify_id, sc.pid, sc.song_classify_name, sc.classify_sort, sc.classify_home, sc.is_parent
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.webMusic.common.model.SongClassifyExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />,
+    (select COUNT(*) from song_sheet ss WHERE ss.song_classify_ids = sc.song_classify_id) as songSheetNo
+    from song_classify sc 
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from song_classify sc 
+    where song_classify_id = #{songClassifyId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from song_classify  
+    where song_classify_id = #{songClassifyId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.webMusic.common.model.SongClassifyExample" >
+    delete from song_classify 
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.webMusic.common.model.SongClassify" >
+    insert into song_classify (song_classify_id, pid, song_classify_name, 
+      classify_sort, classify_home, is_parent
+      )
+    values (#{songClassifyId,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR}, #{songClassifyName,jdbcType=VARCHAR}, 
+      #{classifySort,jdbcType=VARCHAR}, #{classifyHome,jdbcType=VARCHAR}, #{isParent,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.webMusic.common.model.SongClassify" >
+    insert into song_classify
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="songClassifyId != null" >
+        song_classify_id,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="songClassifyName != null" >
+        song_classify_name,
+      </if>
+      <if test="classifySort != null" >
+        classify_sort,
+      </if>
+      <if test="classifyHome != null" >
+        classify_home,
+      </if>
+      <if test="isParent != null" >
+        is_parent,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="songClassifyId != null" >
+        #{songClassifyId,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="songClassifyName != null" >
+        #{songClassifyName,jdbcType=VARCHAR},
+      </if>
+      <if test="classifySort != null" >
+        #{classifySort,jdbcType=VARCHAR},
+      </if>
+      <if test="classifyHome != null" >
+        #{classifyHome,jdbcType=VARCHAR},
+      </if>
+      <if test="isParent != null" >
+        #{isParent,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.webMusic.common.model.SongClassifyExample" resultType="java.lang.Integer" >
+    select count(*) from song_classify
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update song_classify
+    <set >
+      <if test="record.songClassifyId != null" >
+        song_classify_id = #{record.songClassifyId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pid != null" >
+        pid = #{record.pid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songClassifyName != null" >
+        song_classify_name = #{record.songClassifyName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.classifySort != null" >
+        classify_sort = #{record.classifySort,jdbcType=VARCHAR},
+      </if>
+      <if test="record.classifyHome != null" >
+        classify_home = #{record.classifyHome,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isParent != null" >
+        is_parent = #{record.isParent,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update song_classify
+    set song_classify_id = #{record.songClassifyId,jdbcType=VARCHAR},
+      pid = #{record.pid,jdbcType=VARCHAR},
+      song_classify_name = #{record.songClassifyName,jdbcType=VARCHAR},
+      classify_sort = #{record.classifySort,jdbcType=VARCHAR},
+      classify_home = #{record.classifyHome,jdbcType=VARCHAR},
+      is_parent = #{record.isParent,jdbcType=BIT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.webMusic.common.model.SongClassify" >
+    update song_classify
+    <set >
+      <if test="pid != null" >
+        pid = #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="songClassifyName != null" >
+        song_classify_name = #{songClassifyName,jdbcType=VARCHAR},
+      </if>
+      <if test="classifySort != null" >
+        classify_sort = #{classifySort,jdbcType=VARCHAR},
+      </if>
+      <if test="classifyHome != null" >
+        classify_home = #{classifyHome,jdbcType=VARCHAR},
+      </if>
+      <if test="isParent != null" >
+        is_parent = #{isParent,jdbcType=BIT},
+      </if>
+    </set>
+    where song_classify_id = #{songClassifyId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.webMusic.common.model.SongClassify" >
+    update song_classify
+    set pid = #{pid,jdbcType=VARCHAR},
+      song_classify_name = #{songClassifyName,jdbcType=VARCHAR},
+      classify_sort = #{classifySort,jdbcType=VARCHAR},
+      classify_home = #{classifyHome,jdbcType=VARCHAR},
+      is_parent = #{isParent,jdbcType=BIT}
+    where song_classify_id = #{songClassifyId,jdbcType=VARCHAR}
+  </update>
+  
+  
+  <select id="findAll" resultMap="BaseResultMap">
+  	 select 
+    <include refid="Base_Column_List" />
+    from song_classify sc
+    <include refid="where_all" />
+    <include refid="limit_sql" />
+  </select>
+  
+   <select id="findCount" resultMap="BaseResultMap">
+ 	 select count(song_classify_id) from  song_classify
+  	<include refid="where_all" />
+  </select>
+  
+ <sql id="where_all">
+  <where>
+  	<trim suffixOverrides="and|or">
+	  	<if test="songClassifyName != null and songClassifyName != ''">
+	  		LOWER(song_classify_name) like CONCAT("%",#{songClassifyName,jdbcType=VARCHAR},"%") and 
+	  	</if>
+	  	<if test="pid != null and pid != ''">
+	  		pid = #{pid,jdbcType=VARCHAR} and
+	  	</if>
+  	</trim>
+  </where>
+</sql>
+ <sql id="limit_sql">
+ 	   <if test="page_sql != null and page_sql != ''">
+     	${page_sql}
+     </if>
+ </sql>
+</mapper>

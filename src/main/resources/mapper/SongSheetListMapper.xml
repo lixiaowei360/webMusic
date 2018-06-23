@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.webMusic.common.dao.SongSheetListMapper" >
+  <resultMap id="BaseResultMap" type="com.webMusic.common.model.SongSheetList" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="song_sheet_id" property="songSheetId" jdbcType="VARCHAR" />
+    <result column="song_list_id" property="songListId" jdbcType="VARCHAR" />
+    <result column="song_opne" property="songOpne" jdbcType="BIT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, song_sheet_id, song_list_id, song_opne
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.webMusic.common.model.SongSheetListExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from song_sheet_list
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from song_sheet_list
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from song_sheet_list
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.webMusic.common.model.SongSheetListExample" >
+    delete from song_sheet_list
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.webMusic.common.model.SongSheetList" >
+    insert into song_sheet_list (id, song_sheet_id, song_list_id, 
+      song_opne)
+    values (#{id,jdbcType=VARCHAR}, #{songSheetId,jdbcType=VARCHAR}, #{songListId,jdbcType=VARCHAR}, 
+      #{songOpne,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.webMusic.common.model.SongSheetList" >
+    insert into song_sheet_list
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="songSheetId != null" >
+        song_sheet_id,
+      </if>
+      <if test="songListId != null" >
+        song_list_id,
+      </if>
+      <if test="songOpne != null" >
+        song_opne,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="songSheetId != null" >
+        #{songSheetId,jdbcType=VARCHAR},
+      </if>
+      <if test="songListId != null" >
+        #{songListId,jdbcType=VARCHAR},
+      </if>
+      <if test="songOpne != null" >
+        #{songOpne,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.webMusic.common.model.SongSheetListExample" resultType="java.lang.Integer" >
+    select count(*) from song_sheet_list
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update song_sheet_list
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songSheetId != null" >
+        song_sheet_id = #{record.songSheetId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songListId != null" >
+        song_list_id = #{record.songListId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songOpne != null" >
+        song_opne = #{record.songOpne,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update song_sheet_list
+    set id = #{record.id,jdbcType=VARCHAR},
+      song_sheet_id = #{record.songSheetId,jdbcType=VARCHAR},
+      song_list_id = #{record.songListId,jdbcType=VARCHAR},
+      song_opne = #{record.songOpne,jdbcType=BIT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.webMusic.common.model.SongSheetList" >
+    update song_sheet_list
+    <set >
+      <if test="songSheetId != null" >
+        song_sheet_id = #{songSheetId,jdbcType=VARCHAR},
+      </if>
+      <if test="songListId != null" >
+        song_list_id = #{songListId,jdbcType=VARCHAR},
+      </if>
+      <if test="songOpne != null" >
+        song_opne = #{songOpne,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.webMusic.common.model.SongSheetList" >
+    update song_sheet_list
+    set song_sheet_id = #{songSheetId,jdbcType=VARCHAR},
+      song_list_id = #{songListId,jdbcType=VARCHAR},
+      song_opne = #{songOpne,jdbcType=BIT}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

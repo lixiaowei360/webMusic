@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.webMusic.common.dao.SongSheetMapper" >
+  <resultMap id="BaseResultMap" type="com.webMusic.common.model.SongSheet" >
+    <id column="song_sheet_id" property="songSheetId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="song_introduce" property="songIntroduce" jdbcType="VARCHAR" />
+    <result column="song_classify_ids" property="songClassifyIds" jdbcType="VARCHAR" />
+    <result column="song_picture" property="songPicture" jdbcType="VARCHAR" />
+    <result column="comments_id" property="commentsId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="song_sheet_name" property="songSheetName" jdbcType="TIMESTAMP" />
+    <result column="song_sheet_click" property="songSheetClick" jdbcType="DECIMAL" />
+    <result column="i_collect" property="iCollect" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  <resultMap id="songSheetAndUserResultMap" type="com.webMusic.common.model.SongSheet" extends="BaseResultMap">
+    <association property="user" resultMap="com.webMusic.common.dao.UUserMapper.BaseResultMap" />  
+  </resultMap>
+
+  <resultMap id="songSheetUserSongClassificationResultMap" type="com.webMusic.common.model.SongSheet" extends="songSheetAndUserResultMap">
+    <association property="songClassify" resultMap="com.webMusic.common.dao.SongClassifyMapper.BaseResultMap" />
+  </resultMap>
+
+  <!-- 一对多查询歌单对应的歌曲 -->
+  <resultMap id="songSheetAndSongListsResultMap" type="com.webMusic.common.model.SongSheet" extends="BaseResultMap">
+    <collection  property="songLists"  resultMap="com.webMusic.common.dao.SongListMapper.BaseResultMap">
+    </collection>
+  </resultMap>
+  
+  
+  
+  <resultMap id="songSheetAndUserAndSongClassifyResultMap" type="com.webMusic.common.model.SongSheet" extends="songSheetAndUserResultMap">
+     <association property="songClassify" resultMap="com.webMusic.common.dao.SongClassifyMapper.BaseResultMap" />  
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    ss.song_sheet_id, ss.user_id, ss.song_introduce, ss.song_classify_ids, ss.song_picture, ss.comments_id, 
+    ss.create_time, ss.update_time,ss.song_sheet_name,ss.song_sheet_click,ss.i_collect
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.webMusic.common.model.SongSheetExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from song_sheet ss
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  
+<!--   需要进行关联查询user以及歌词分类 -->
+  <select id="selectByPrimaryKey" resultMap="songSheetAndUserAndSongClassifyResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />,
+    <include refid="com.webMusic.common.dao.UUserMapper.Base_Column_List" />,
+    <include refid="com.webMusic.common.dao.SongClassifyMapper.Base_Column_List" />
+    from 
+    song_sheet ss 
+    left join u_user uu on  uu.id = ss.user_id 
+    left join song_classify sc on sc.song_classify_id = ss.song_classify_ids
+    where 
+    song_sheet_id = #{songSheetId,jdbcType=VARCHAR}
+  </select>
+  
+ <!-- 查询歌单下的所有歌曲 --> 
+    <select id="selectSongSheetToSongs" resultMap="songSheetAndSongListsResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />,
+    <include refid="com.webMusic.common.dao.SongListMapper.Base_Column_List" />
+    from 
+    song_sheet ss 
+    left join song_sheet_list ssll on  ssll.song_sheet_id = ss.song_sheet_id 
+    left join song_list sl on sl.song_list_id = ssll.song_list_id 
+    where 
+    ss.song_sheet_id = #{songSheetId,jdbcType=VARCHAR}
+  </select>
+  
+  
+  
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from song_sheet
+    where song_sheet_id = #{songSheetId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.webMusic.common.model.SongSheetExample" >
+    delete from song_sheet
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.webMusic.common.model.SongSheet" >
+    insert into song_sheet (song_sheet_id, user_id, song_introduce, 
+      song_classify_ids, song_picture, comments_id, 
+      create_time, update_time,song_sheet_click,i_collect)
+    values (#{songSheetId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{songIntroduce,jdbcType=VARCHAR}, 
+      #{songClassifyIds,jdbcType=VARCHAR}, #{songPicture,jdbcType=VARCHAR}, #{commentsId,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime},#{songSheetName,jdbcType=VARCHAR},
+      #{songSheetClick,jdbcType=DECIMAL},#{iCollect,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.webMusic.common.model.SongSheet" >
+    insert into song_sheet
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="songSheetId != null" >
+        song_sheet_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="songIntroduce != null" >
+        song_introduce,
+      </if>
+      <if test="songClassifyIds != null" >
+        song_classify_ids,
+      </if>
+      <if test="songPicture != null" >
+        song_picture,
+      </if>
+      <if test="commentsId != null" >
+        comments_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="songSheetName != null" >
+        song_sheet_name,
+      </if>
+      <if test="songSheetClick != null" >
+        song_sheet_click,
+      </if>
+      <if test="iCollect != null" >
+        i_collect,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="songSheetId != null" >
+        #{songSheetId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="songIntroduce != null" >
+        #{songIntroduce,jdbcType=VARCHAR},
+      </if>
+      <if test="songClassifyIds != null" >
+        #{songClassifyIds,jdbcType=VARCHAR},
+      </if>
+      <if test="songPicture != null" >
+        #{songPicture,jdbcType=VARCHAR},
+      </if>
+      <if test="commentsId != null" >
+        #{commentsId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime},
+      </if>
+      <if test="songSheetName != null" >
+         #{songSheetName},
+      </if>
+      <if test="songSheetClick != null" >
+        #{songSheetClick,jdbcType=DECIMAL},
+      </if>
+      <if test="iCollect != null" >
+        #{iCollect,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.webMusic.common.model.SongSheetExample" resultType="java.lang.Integer" >
+    select count(*) from song_sheet
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update song_sheet
+    <set >
+      <if test="record.songSheetId != null" >
+        song_sheet_id = #{record.songSheetId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songIntroduce != null" >
+        song_introduce = #{record.songIntroduce,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songClassifyIds != null" >
+        song_classify_ids = #{record.songClassifyIds,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songPicture != null" >
+        song_picture = #{record.songPicture,jdbcType=VARCHAR},
+      </if>
+      <if test="record.commentsId != null" >
+        comments_id = #{record.commentsId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime},
+      </if>
+      <if test="record.songSheetName != null" >
+        song_sheet_name = #{record.songSheetName},
+      </if>
+      <if test="record.songSheetClick != null" >
+        song_sheet_click = #{record.songSheetClick,jdbcType=DECIMAL},
+      </if>
+      <if test="record.iCollect != null" >
+        i_collect = #{record.iCollect,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update song_sheet
+    set song_sheet_id = #{record.songSheetId,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      song_introduce = #{record.songIntroduce,jdbcType=VARCHAR},
+      song_classify_ids = #{record.songClassifyIds,jdbcType=VARCHAR},
+      song_picture = #{record.songPicture,jdbcType=VARCHAR},
+      comments_id = #{record.commentsId,jdbcType=VARCHAR},
+      create_time = #{record.createTime},
+      update_time = #{record.updateTime},
+      song_sheet_name = #{record.songSheetName},
+      song_sheet_click = #{record.songSheetClick,jdbcType=DECIMAL},
+      i_collect = #{record.iCollect,jdbcType=BIT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.webMusic.common.model.SongSheet" >
+    update song_sheet
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="songIntroduce != null and songIntroduce != ''" >
+        song_introduce = #{songIntroduce,jdbcType=VARCHAR},
+      </if>
+      <if test="songClassifyIds != null and songClassifyIds != ''" >
+        song_classify_ids = #{songClassifyIds,jdbcType=VARCHAR},
+      </if>
+      <if test="songPicture != null and songPicture != ''" >
+        song_picture = #{songPicture,jdbcType=VARCHAR},
+      </if>
+      <if test="commentsId != null and commentsId != ''" >
+        comments_id = #{commentsId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null and createTime != ''" >
+        create_time = #{createTime},
+      </if>
+      <if test="updateTime != null and updateTime != ''" >
+        update_time = #{updateTime},
+      </if>
+      <if test="songSheetName != null and songSheetName != ''" >
+        song_sheet_name = #{songSheetName},
+      </if>
+     <if test="songSheetClick != null" >
+        song_sheet_click = #{songSheetClick,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where song_sheet_id = #{songSheetId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.webMusic.common.model.SongSheet" >
+    update song_sheet
+    set user_id = #{userId,jdbcType=VARCHAR},
+      song_introduce = #{songIntroduce,jdbcType=VARCHAR},
+      song_classify_ids = #{songClassifyIds,jdbcType=VARCHAR},
+      song_picture = #{songPicture,jdbcType=VARCHAR},
+      comments_id = #{commentsId,jdbcType=VARCHAR},
+      create_time = #{createTime},
+      update_time = #{updateTime},
+      song_sheet_name = #{songSheetName},
+      song_sheet_click = #{songSheetClick,jdbcType=DECIMAL},
+      i_collect = #{iCollect,jdbcType=BIT}
+    where song_sheet_id = #{songSheetId,jdbcType=VARCHAR}
+  </update>
+  
+<select id="findAll" resultMap="songSheetUserSongClassificationResultMap">
+   select 
+   <include refid="Base_Column_List" />
+   ,
+   <include refid="com.webMusic.common.dao.UUserMapper.Base_Column_List" />
+  ,
+  <include refid="com.webMusic.common.dao.SongClassifyMapper.Base_Column_List" />
+   from song_sheet ss
+   left join u_user uu on ss.user_id = uu.id
+   left join song_classify sc on sc.song_classify_id = ss.song_classify_ids
+   <include refid="where_all" />
+   <include refid="limit_sql" />
+ </select>
+  
+  <select id="findCount" resultMap="BaseResultMap">
+	 select count(song_sheet_id) from  song_sheet ss
+ 	<include refid="where_all" />
+ </select>
+  
+ <sql id="where_all">
+  <where>
+      <trim suffixOverrides="and|or">
+	  	<if test="user != null and user.nickname != null and user.nickname != ''">
+	  		LOWER(uu.nickname) like CONCAT("%",#{user.nickname,jdbcType=VARCHAR},"%") and 
+	  	</if>
+	  	<if test="songIntroduce != null and songIntroduce != ''">
+	  		LOWER(ss.song_introduce) like CONCAT("%",#{songIntroduce,jdbcType=VARCHAR},"%") and
+	  	</if>
+        <if test="songClassifyIds != null and songClassifyIds != ''">
+          ss.song_classify_ids = #{songClassifyIds,jdbcType=VARCHAR} and
+        </if>
+        <if test="userId != null and userId != ''">
+          ss.user_id = #{userId}
+        </if>
+	  </trim>
+  </where>
+</sql>
+ <sql id="limit_sql">
+ 	   <if test="page_sql != null and page_sql != ''">
+     	${page_sql}
+     </if>
+ </sql>
+
+  <select id="findSongSheet" parameterType="com.webMusic.common.model.SongSheet" resultMap="songSheetUserSongClassificationResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="com.webMusic.common.dao.UUserMapper.Base_Column_List" />
+    ,
+    <include refid="com.webMusic.common.dao.SongClassifyMapper.Base_Column_List" />
+    from song_sheet ss
+    left join u_user uu on ss.user_id = uu.id
+    left join song_classify sc on sc.song_classify_id = ss.song_classify_ids
+    <include refid="where_all" />
+  </select>
+
+  <select id="getUserSongSheetCollection" parameterType="com.webMusic.common.model.SongSheet" resultMap="songSheetUserSongClassificationResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from song_sheet ss
+    <where>
+      ss.song_sheet_id IN (
+      SELECT
+      ssc.sheet_id
+      FROM
+      song_sheet_collection ssc
+      WHERE
+      ssc.user_id = #{userId}
+      )
+    </where>
+  </select>
+
+
+</mapper>

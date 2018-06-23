@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.webMusic.common.dao.SongListMapper" >
+  <resultMap id="BaseResultMap" type="com.webMusic.common.model.SongList" >
+    <id column="song_list_id" property="songListId" jdbcType="VARCHAR" />
+    <result column="song_url" property="songUrl" jdbcType="VARCHAR" />
+    <result column="song_name" property="songName" jdbcType="VARCHAR" />
+    <result column="song_classify_id" property="songClassifyId" jdbcType="VARCHAR" />
+    <result column="song_lyric" property="songLyric" jdbcType="VARCHAR" />
+    <result column="song_singer" property="songSinger" jdbcType="VARCHAR" />
+     <result column="song_picture_url" property="songPictureUrl" jdbcType="VARCHAR" />
+    <result column="song_open_download" property="songOpenDownload" jdbcType="VARCHAR" />
+    <result column="song_open_public" property="songOpenPublic" jdbcType="VARCHAR" />
+    <result column="song_click" property="songClick" jdbcType="DECIMAL" />
+     <result column="song_time" property="songTime" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="release_time" property="releaseTime" jdbcType="TIMESTAMP" />
+    <association property="songClassify" resultMap="com.webMusic.common.dao.SongClassifyMapper.BaseResultMap" />
+  </resultMap>
+  
+   <resultMap id="songToSlongClassifyResultMap" type="com.webMusic.common.model.SongList" extends="BaseResultMap">
+    <association property="songClassify" resultMap="com.webMusic.common.dao.SongClassifyMapper.BaseResultMap" />  
+  </resultMap>
+  
+  
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    sl.song_list_id, sl.song_url, sl.song_name, sl.song_classify_id, sl.song_lyric, sl.song_singer,sl.song_picture_url,
+    sl.song_open_download, sl.song_open_public,sl.song_click,sl.song_time,sl.create_time,sl.release_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.webMusic.common.model.SongListExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from song_list sl
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="songToSlongClassifyResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+       ,
+   <include refid="com.webMusic.common.dao.SongClassifyMapper.Base_Column_List" />
+   
+    from song_list sl
+   left join song_classify sc
+   on sc.song_classify_id = sl.song_classify_id
+    where song_list_id = #{songListId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from song_list 
+    where song_list_id = #{songListId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.webMusic.common.model.SongListExample" >
+    delete from song_list 
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.webMusic.common.model.SongList" >
+    insert into song_list (song_list_id, song_url, song_name, 
+      song_classify_id, song_lyric, song_singer,
+      song_picture_url, song_open_download, song_open_public,song_click,song_time,create_time, release_time
+      )
+    values (#{songListId,jdbcType=VARCHAR}, #{songUrl,jdbcType=VARCHAR}, #{songName,jdbcType=VARCHAR}, 
+      #{songClassifyId,jdbcType=VARCHAR}, #{songLyric,jdbcType=VARCHAR}, #{songSinger,jdbcType=VARCHAR},
+      #{songPictureUrl,jdbcType=VARCHAR}, #{songOpenDownload,jdbcType=VARCHAR}, #{songOpenPublic,jdbcType=VARCHAR},
+      #{songClick,jdbcType=DECIMAL},#{songTime,jdbcType=VARCHAR},#{createTime}, #{releaseTime})
+  </insert>
+  <insert id="insertSelective" parameterType="com.webMusic.common.model.SongList" >
+    insert into song_list
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="songListId != null" >
+        song_list_id,
+      </if>
+      <if test="songUrl != null" >
+        song_url,
+      </if>
+      <if test="songName != null" >
+        song_name,
+      </if>
+      <if test="songClassifyId != null" >
+        song_classify_id,
+      </if>
+      <if test="songLyric != null" >
+        song_lyric,
+      </if>
+      <if test="songSinger != null" >
+        song_singer,
+      </if>
+      <if test="songPictureUrl != null" >
+        song_picture_url,
+      </if>
+      <if test="songOpenDownload != null" >
+        song_open_download,
+      </if>
+      <if test="songOpenPublic != null" >
+        song_open_public,
+      </if>
+      <if test="songClick != null" >
+        song_click,
+      </if>
+      <if test="songTime != null" >
+        song_time,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="releaseTime != null" >
+        release_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="songListId != null" >
+        #{songListId,jdbcType=VARCHAR},
+      </if>
+      <if test="songUrl != null" >
+        #{songUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="songName != null" >
+        #{songName,jdbcType=VARCHAR},
+      </if>
+      <if test="songClassifyId != null" >
+        #{songClassifyId,jdbcType=VARCHAR},
+      </if>
+      <if test="songLyric != null" >
+        #{songLyric,jdbcType=VARCHAR},
+      </if>
+      <if test="songSinger != null" >
+        #{songSinger,jdbcType=VARCHAR},
+      </if>
+      <if test="songPictureUrl != null" >
+        #{songPictureUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="songOpenDownload != null" >
+        #{songOpenDownload,jdbcType=VARCHAR},
+      </if>
+      <if test="songOpenPublic != null" >
+        #{songOpenPublic,jdbcType=VARCHAR},
+      </if>
+      <if test="songClick != null" >
+        #{songClick,jdbcType=DECIMAL},
+      </if>  
+     <if test="songTime != null" >
+        #{songTime,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime},
+      </if>
+      <if test="releaseTime != null" >
+        #{releaseTime},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.webMusic.common.model.SongListExample" resultType="java.lang.Integer" >
+    select count(*) from song_list
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update song_list
+    <set >
+      <if test="record.songListId != null" >
+        song_list_id = #{record.songListId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songUrl != null" >
+        song_url = #{record.songUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songName != null" >
+        song_name = #{record.songName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songClassifyId != null" >
+        song_classify_id = #{record.songClassifyId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songLyric != null" >
+        song_lyric = #{record.songLyric,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songSinger != null" >
+        song_singer = #{record.songSinger,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songPictureUrl != null" >
+        song_picture_url = #{record.songPictureUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songOpenDownload != null" >
+        song_open_download = #{record.songOpenDownload,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songOpenPublic != null" >
+        song_open_public = #{record.songOpenPublic,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songClick != null" >
+        song_click = #{record.songClick,jdbcType=DECIMAL},
+      </if>  
+      <if test="record.songTime != null" >
+        song_time = #{record.songTime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime},
+      </if>
+      <if test="record.releaseTime != null" >
+        release_time = #{record.releaseTime},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update song_list
+    set song_list_id = #{record.songListId,jdbcType=VARCHAR},
+      song_url = #{record.songUrl,jdbcType=VARCHAR},
+      song_name = #{record.songName,jdbcType=VARCHAR},
+      song_classify_id = #{record.songClassifyId,jdbcType=VARCHAR},
+      song_lyric = #{record.songLyric,jdbcType=VARCHAR},
+      song_singer = #{record.songSinger,jdbcType=VARCHAR},
+      song_picture_url = #{record.songPictureUrl,jdbcType=VARCHAR},
+      song_open_download = #{record.songOpenDownload,jdbcType=VARCHAR},
+      song_open_public = #{record.songOpenPublic,jdbcType=VARCHAR},
+      song_click = #{record.songClick,jdbcType=DECIMAL},
+      song_time = #{record.songTime,jdbcType=VARCHAR},
+      create_time = #{record.createTime},
+      release_time = #{record.releaseTime}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.webMusic.common.model.SongList" >
+    update song_list
+    <set >
+      <if test="songUrl != null" >
+        song_url = #{songUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="songName != null" >
+        song_name = #{songName,jdbcType=VARCHAR},
+      </if>
+      <if test="songClassifyId != null" >
+        song_classify_id = #{songClassifyId,jdbcType=VARCHAR},
+      </if>
+      <if test="songLyric != null" >
+        song_lyric = #{songLyric,jdbcType=VARCHAR},
+      </if>
+      <if test="songSinger != null" >
+        song_singer = #{songSinger,jdbcType=VARCHAR},
+      </if>
+      <if test="songPictureUrl != null" >
+        song_picture_url = #{songPictureUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="songOpenDownload != null" >
+        song_open_download = #{songOpenDownload,jdbcType=VARCHAR},
+      </if>
+      <if test="songOpenPublic != null" >
+        song_open_public = #{songOpenPublic,jdbcType=VARCHAR},
+      </if>
+      <if test="songClick != null" >
+        song_click = #{songClick,jdbcType=DECIMAL},
+      </if>
+      <if test="songTime != null" >
+        song_time = #{songTime,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime},
+      </if>
+      <if test="releaseTime != null" >
+        release_time = #{releaseTime},
+      </if>
+    </set>
+    where song_list_id = #{songListId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.webMusic.common.model.SongList" >
+    update song_list
+    set song_url = #{songUrl,jdbcType=VARCHAR},
+      song_name = #{songName,jdbcType=VARCHAR},
+      song_classify_id = #{songClassifyId,jdbcType=VARCHAR},
+      song_lyric = #{songLyric,jdbcType=VARCHAR},
+      song_singer = #{songSinger,jdbcType=VARCHAR},
+       song_picture_url = #{songPictureUrl,jdbcType=VARCHAR},
+      song_open_download = #{songOpenDownload,jdbcType=VARCHAR},
+      song_open_public = #{songOpenPublic,jdbcType=VARCHAR},
+      song_click = #{songClick,jdbcType=DECIMAL},
+      song_time = #{record.songTime,jdbcType=VARCHAR},
+      create_time = #{record.createTime},
+      release_time = #{record.releaseTime}
+    where song_list_id = #{songListId,jdbcType=VARCHAR}
+  </update>
+  
+
+  <select id="findAll" resultMap="songToSlongClassifyResultMap">
+ 	 select 
+   <include refid="Base_Column_List" />
+   ,
+   <include refid="com.webMusic.common.dao.SongClassifyMapper.Base_Column_List" />
+   from song_list sl
+   left join song_classify sc
+   on sc.song_classify_id = sl.song_classify_id
+   <include refid="where_all" />
+    <if test='orderBy != null and orderBy != ""' >
+        order by ${orderBy}
+    </if>
+   <include refid="limit_sql" />
+ </select>
+  
+  <select id="findCount" resultMap="BaseResultMap">
+	 select count(song_list_id) from  song_list sl
+ 	<include refid="where_all" />
+ </select>
+  
+ <sql id="where_all">
+  <where>
+  	<trim suffixOverrides="and|or">
+	  	<if test="songName != null and songName != ''">
+	  		LOWER(song_name) like CONCAT("%",#{songName,jdbcType=VARCHAR},"%") and 
+	  	</if>
+	  	<if test="songListId != null and songListId != ''">
+	  		song_list_id = #{songListId,jdbcType=VARCHAR} and
+	  	</if>
+	    <if test="songSinger != null and songSinger != ''">
+	    LOWER(song_singer) like CONCAT("%",#{songSinger,jdbcType=VARCHAR},"%") and 
+	  	</if>
+	    <if test="songOpenDownload != null and songOpenDownload != ''">
+	  		song_open_download = #{songOpenDownload,jdbcType=VARCHAR} and
+	  	</if>
+	    <if test="songOpenPublic != null and songOpenPublic != ''">
+	  		song_open_public = #{songOpenPublic,jdbcType=VARCHAR} and
+	  	</if>
+	    <if test="songSheetId != null and songSheetId != '' and type == 'edit'">
+	  		sl.song_list_id IN (
+			SELECT
+				ssll.song_list_id
+			FROM
+				song_sheet_list ssll
+				WHERE
+				ssll.song_sheet_id = #{songSheetId,jdbcType=VARCHAR}
+			) and
+	  	</if>
+	  	<if test="songSheetId != null and songSheetId != '' and type == 'add'">
+	  		sl.song_list_id not IN (
+			SELECT
+				ssll.song_list_id
+			FROM
+				song_sheet_list ssll
+				WHERE
+				ssll.song_sheet_id = #{songSheetId,jdbcType=VARCHAR}
+			) and
+	  	</if>
+  	</trim>
+  </where>
+</sql>
+ <sql id="limit_sql">
+ 	   <if test="page_sql != null and page_sql != ''">
+     	${page_sql}
+     </if>
+ </sql>
+
+  <select id="findSongList" parameterType="com.webMusic.common.model.SongList"  resultMap="songToSlongClassifyResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from song_list sl
+    <where>
+      <trim suffixOverrides="and|or">
+        <if test="songSheetId != null and songSheetId != ''">
+          sl.song_list_id IN (
+          SELECT
+          ssll.song_list_id
+          FROM
+          song_sheet_list ssll
+          WHERE
+          ssll.song_sheet_id = #{songSheetId,jdbcType=VARCHAR}
+          ) and
+        </if>
+        <if test="songName != null and songName != ''">
+          LOWER(song_name) like CONCAT("%",#{songName,jdbcType=VARCHAR},"%") and
+        </if>
+        <if test="songListId != null and songListId != ''">
+          song_list_id = #{songListId,jdbcType=VARCHAR} and
+        </if>
+        <if test="songSinger != null and songSinger != ''">
+          LOWER(song_singer) like CONCAT("%",#{songSinger,jdbcType=VARCHAR},"%") and
+        </if>
+        <if test="songOpenDownload != null and songOpenDownload != ''">
+          song_open_download = #{songOpenDownload,jdbcType=VARCHAR} and
+        </if>
+        <if test="songOpenPublic != null and songOpenPublic != ''">
+          song_open_public = #{songOpenPublic,jdbcType=VARCHAR} and
+        </if>
+      </trim>
+    </where>
+  </select>
+</mapper>
