@@ -44,8 +44,8 @@ public class BaseController {
 	public static  int pageSize = 10;
 	protected final static Logger logger = Logger.getLogger(BaseController.class);
 	protected Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-	public static String URL404 =  "/asfasfsadf404.html";
-	
+	public static String URL404 =  "/asfasf222sadf404.html";
+
 	private final static String PARAM_PAGE_NO = "pageNo";
 	
 	protected String pageSizeName = "pageSize";
