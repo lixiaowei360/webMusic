@@ -44,13 +44,13 @@ public class BaseController {
 	public static  int pageSize = 10;
 	protected final static Logger logger = Logger.getLogger(BaseController.class);
 	protected Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-	public static String URL404 =  "/asfasf222fawfsfsadf404.html";
+	public static String URL404 =  "/我是晓伟132465404.html";
 
 
 
-	private final static String PARAM_PAGE_NO = "pageNo";
+	private final static String PARAM_PAGE_NO = "pag1231231eNo";
 	
-	protected String pageSizeName = "pageSize";
+	protected String pageSizeName = "pag123123eSize";
 	
 	/**
 	 * 往Request里带值
