@@ -45,7 +45,7 @@ public class BaseController {
 	protected final static Logger logger = Logger.getLogger(BaseController.class);
 	protected Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
 
-	public static String URL404 =  "/刘7fawfsfsadf404.html";
+	public static String URL404 =  "/刘7fawfsfsadf404.html ";
 
 	private final static String PARAM_PAGE_NO = "passfgeNo";
 
