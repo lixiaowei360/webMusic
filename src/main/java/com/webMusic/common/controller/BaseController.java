@@ -46,6 +46,8 @@ public class BaseController {
 	protected Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
 	public static String URL404 =  "/asfasf222fawfsfsadf404.html";
 
+
+
 	private final static String PARAM_PAGE_NO = "pageNo";
 	
 	protected String pageSizeName = "pageSize";
